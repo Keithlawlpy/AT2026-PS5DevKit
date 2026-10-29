@@ -83,9 +83,9 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem.ps5": {
-      "version": "file:C:/Users/e4-lau/Downloads/com.unity.inputsystem.ps5-1.0.2.tgz",
+      "version": "file:com.unity.inputsystem.ps5",
       "depth": 0,
-      "source": "local-tarball",
+      "source": "embedded",
       "dependencies": {
         "com.unity.inputsystem": "1.10.0"
       }
@@ -127,9 +127,9 @@
       }
     },
     "com.unity.render-pipelines.ps5": {
-      "version": "file:C:/Users/e4-lau/Downloads/com.unity.render-pipelines.ps5-1.10.2.tgz",
+      "version": "file:com.unity.render-pipelines.ps5",
       "depth": 0,
-      "source": "local-tarball",
+      "source": "embedded",
       "dependencies": {}
     },
     "com.unity.render-pipelines.universal": {
