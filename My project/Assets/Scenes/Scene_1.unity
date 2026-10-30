@@ -996,6 +996,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonShooterController
   aimVirtualCamera: {fileID: 585593292}
+  normalSenitivity: 1
+  aimSenitivity: 0.5
 --- !u!1 &1764214107
 GameObject:
   m_ObjectHideFlags: 0
