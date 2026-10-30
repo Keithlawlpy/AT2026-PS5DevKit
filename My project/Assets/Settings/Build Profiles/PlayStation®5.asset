@@ -30,15 +30,15 @@ MonoBehaviour:
     - rid: 1464950377501687830
       type: {class: PS5BuildProfilePlatformSettingsBase, ns: UnityEditor.PS5, asm: UnityEditor.PS5.Extensions}
       data:
-        m_Development: 0
+        m_Development: 1
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
         m_AllowDebugging: 0
         m_WaitForManagedDebugger: 0
         m_ManagedDebuggerFixedPort: 0
-        m_ExplicitNullChecks: 0
-        m_ExplicitDivideByZeroChecks: 0
-        m_ExplicitArrayBoundsChecks: 0
+        m_ExplicitNullChecks: 1
+        m_ExplicitDivideByZeroChecks: 1
+        m_ExplicitArrayBoundsChecks: 1
         m_CompressionType: -1
         m_InstallInBuildFolder: 0
         m_InsightsSettingsContainer:
@@ -46,9 +46,9 @@ MonoBehaviour:
         m_AdaptivePerformanceEnabled: 0
         m_WorkspaceName: workspace0
         m_BuildCompressionType: 0
-        m_BuildSubtarget: 0
+        m_BuildSubtarget: 1
         m_BuildCompressionLevel: 0
-        m_KeepPackageFiles: 0
+        m_KeepPackageFiles: 1
         m_ForceInstallation: 0
         m_HardwareTarget: 1
         m_EnhancedNativeDebugging: 0
