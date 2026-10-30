@@ -11,6 +11,8 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private float aimSenitivity;
     [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
     [SerializeField] private Transform debugTransform;
+    [SerializeField] private Transform pfBulletProjectile;
+    [SerializeField] private Transform bulletSpawnPoint;
 
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
@@ -42,6 +44,20 @@ public class ThirdPersonShooterController : MonoBehaviour
             debugTransform.position = raycastHit.point;
             
         }
+
+        Vector3 worldAimTarget = raycastHit.point;
+
+        if (starterAssetsInputs.shoot)
+        {
+            Vector3 aimDirection = (worldAimTarget - bulletSpawnPoint.position).normalized;
+            Instantiate(pfBulletProjectile, bulletSpawnPoint.position, Quaternion.LookRotation(aimDirection, Vector3.up));
+            starterAssetsInputs.shoot = false;
+
+
+        }
+
+
+
     }
 
 
