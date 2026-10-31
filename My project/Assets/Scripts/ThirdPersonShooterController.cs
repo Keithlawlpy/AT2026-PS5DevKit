@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
 using StarterAssets;
@@ -13,6 +14,9 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private Transform debugTransform;
     [SerializeField] private Transform pfBulletProjectile;
     [SerializeField] private Transform bulletSpawnPoint;
+    [SerializeField, Range(0f, 1f)] private float shootLowFrequencyMotor = 0.25f;
+    [SerializeField, Range(0f, 1f)] private float shootHighFrequencyMotor = 0.75f;
+    [SerializeField] private float shootHapticDuration = 0.2f;
 
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
@@ -51,13 +55,33 @@ public class ThirdPersonShooterController : MonoBehaviour
         {
             Vector3 aimDirection = (worldAimTarget - bulletSpawnPoint.position).normalized;
             Instantiate(pfBulletProjectile, bulletSpawnPoint.position, Quaternion.LookRotation(aimDirection, Vector3.up));
+            TriggerShootHaptics();
             starterAssetsInputs.shoot = false;
 
 
         }
+    }
 
+    private void TriggerShootHaptics()
+    {
+        Gamepad gamepad = Gamepad.current;
+        if (gamepad == null)
+        {
+            return;
+        }
 
+        gamepad.SetMotorSpeeds(shootLowFrequencyMotor, shootHighFrequencyMotor);
+        StartCoroutine(StopShootHaptics(gamepad));
+    }
 
+    private IEnumerator StopShootHaptics(Gamepad gamepad)
+    {
+        yield return new WaitForSecondsRealtime(shootHapticDuration);
+
+        if (gamepad != null)
+        {
+            gamepad.SetMotorSpeeds(0f, 0f);
+        }
     }
 
 
