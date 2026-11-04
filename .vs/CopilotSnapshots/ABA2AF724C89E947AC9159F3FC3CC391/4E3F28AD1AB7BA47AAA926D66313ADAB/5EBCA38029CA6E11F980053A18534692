@@ -1,0 +1,56 @@
+﻿using UnityEngine;
+using UnityEngine.InputSystem.PS5;
+
+public class Test_ps5 : MonoBehaviour
+{
+#if UNITY_EDITOR
+    private DualSenseGamepadPC pad;
+#endif
+
+    private void Start()
+    {
+#if UNITY_EDITOR
+        pad = DualSenseGamepadPC.current;
+
+        if (pad == null)
+        {
+            Debug.LogWarning("No DualSense controller was detected by the PS5 Editor support.");
+            return;
+        }
+
+        ApplyTriggerEffects();
+#else
+        Debug.LogWarning("DualSenseGamepadPC trigger effects are available only in the Unity Editor.");
+#endif
+    }
+
+#if UNITY_EDITOR
+    private void ApplyTriggerEffects()
+    {
+        var effect = new TriggerEffectParam(TriggerEffectMask.L2 | TriggerEffectMask.R2);
+
+        effect.left.mode = TriggerEffectMode.Feedback;
+        effect.left.feedback.position = 2;
+        effect.left.feedback.strength = 8;
+
+        effect.right.mode = TriggerEffectMode.Weapon;
+        effect.right.weapon.startPosition = 2;
+        effect.right.weapon.endPosition = 8;
+        effect.right.weapon.strength = 8;
+
+        gamepad.SetTriggerEffect(effect);
+    }
+
+    private void OnDisable()
+    {
+        if (pad == null)
+        {
+            return;
+        }
+
+        var effect = new TriggerEffectParam(TriggerEffectMask.L2 | TriggerEffectMask.R2);
+        effect.left.mode = TriggerEffectMode.Off;
+        effect.right.mode = TriggerEffectMode.Off;
+        gamepad.SetTriggerEffect(effect);
+    }
+}

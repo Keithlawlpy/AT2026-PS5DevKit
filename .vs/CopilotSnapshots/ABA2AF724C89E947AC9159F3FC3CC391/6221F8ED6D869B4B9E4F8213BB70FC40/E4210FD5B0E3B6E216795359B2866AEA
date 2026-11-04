@@ -1,0 +1,32 @@
+﻿using UnityEngine;
+using UnityEngine.InputSystem.PS5;
+
+public class Test_ps5 : MonoBehaviour
+{
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+
+    var pad = UnityEngine.InputSystem.PS5.DualSenseGamepad.GetBySlotIndex(0);
+    var effect = new UnityEngine.InputSystem.PS5.TriggerEffectParam(UnityEngine.InputSystem.PS5.TriggerEffectMask.L2 | UnityEngine.InputSystem.PS5.TriggerEffectMask.R2);
+
+    effect.left.mode =UnityEngine.InputSystem.PS5.TriggerEffectMode.Feedback;
+            effect.left.feedback.position=2;
+            effect.left.feedback.strength=8;
+
+            effect.right.mode = UnityEngine.InputSystem.PS5.TriggerEffectMode.Weapon;
+            effect.right.weapon.startPosition= 2;
+            effect.right.weapon.endPosition= 8;
+            effect.right.weapon.strength= 8;
+
+            pad.SetTriggerEffect(effect);
+}

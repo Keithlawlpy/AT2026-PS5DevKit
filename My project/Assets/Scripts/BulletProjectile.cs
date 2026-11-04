@@ -18,6 +18,24 @@ public class BulletProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Marble"))
+        {
+            Debug.Log("Bullet hit Marble!");
+        }
+        else if(other.CompareTag("Metal"))
+        {
+            Debug.Log("Bullet hit Metal!");
+        }
+        else if (other.CompareTag("Glass"))
+        {
+            Debug.Log("Bullet hit Glass!");
+        }
+        else
+        {
+            Debug.Log("Bullet hit something else!");
+        }
+
+
         Destroy(gameObject);
     }
 

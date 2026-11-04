@@ -1,0 +1,49 @@
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.PS5;
+
+public class Test_ps5 : MonoBehaviour
+{
+
+    private void Start()
+    {
+        Gamepad gamepad = Gamepad.current;
+
+        if (gamepad == null)
+        {
+            Debug.Log("No DualSense controller was found in slot 0.");
+            return;
+        }
+
+        ApplyTriggerEffects();
+    }
+
+    private void ApplyTriggerEffects()
+    {
+        var effect = new TriggerEffectParam(TriggerEffectMask.L2 | TriggerEffectMask.R2);
+
+        effect.left.mode = TriggerEffectMode.Feedback;
+        effect.left.feedback.position = 2;
+        effect.left.feedback.strength = 8;
+
+        effect.right.mode = TriggerEffectMode.Weapon;
+        effect.right.weapon.startPosition = 2;
+        effect.right.weapon.endPosition = 8;
+        effect.right.weapon.strength = 8;
+
+        gamepad.SetTriggerEffect(effect);
+    }
+
+    private void OnDisable()
+    {
+        if (gamepad == null)
+        {
+            return;
+        }
+
+        var effect = new TriggerEffectParam(TriggerEffectMask.L2 | TriggerEffectMask.R2);
+        effect.left.mode = TriggerEffectMode.Off;
+        effect.right.mode = TriggerEffectMode.Off;
+        gamepad.SetTriggerEffect(effect);
+    }
+}

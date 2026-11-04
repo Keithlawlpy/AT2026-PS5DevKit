@@ -27,6 +27,14 @@ public class ThirdPersonShooterController : MonoBehaviour
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
     }
 
+    private void Start()
+    {
+        foreach (InputDevice device in InputSystem.devices)
+        {
+            Debug.Log($"Device: {device.displayName}, Type: {device.GetType().FullName}");
+        }
+    }
+
     private void Update()
     {
         if (starterAssetsInputs.aim)
@@ -55,14 +63,14 @@ public class ThirdPersonShooterController : MonoBehaviour
         {
             Vector3 aimDirection = (worldAimTarget - bulletSpawnPoint.position).normalized;
             Instantiate(pfBulletProjectile, bulletSpawnPoint.position, Quaternion.LookRotation(aimDirection, Vector3.up));
-            TriggerShootHaptics();
+            TriggerHaptics();
             starterAssetsInputs.shoot = false;
 
 
         }
     }
 
-    private void TriggerShootHaptics()
+    private void TriggerHaptics()
     {
         Gamepad gamepad = Gamepad.current;
         if (gamepad == null)
