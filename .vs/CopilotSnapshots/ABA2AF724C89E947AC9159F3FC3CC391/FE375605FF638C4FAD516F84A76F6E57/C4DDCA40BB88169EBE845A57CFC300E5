@@ -1,0 +1,37 @@
+﻿using UnityEngine;
+
+public class BulletProjectile : MonoBehaviour
+{
+    private Rigidbody bulletRigidbody;
+    private ThirdPersonShooterController shooterController;
+
+    public void Initialize(ThirdPersonShooterController controller)
+    {
+        shooterController = controller;
+    }
+
+    private void Awake()
+    {
+        bulletRigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        float speed = 20f; 
+        bulletRigidbody.linearVelocity = transform.forward * speed; 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        string materialTag = other.tag;
+
+        if (materialTag == "Marble" || materialTag == "Glass" || materialTag == "Metal")
+        {
+            shooterController?.TriggerImpactHaptics(materialTag);
+            Debug.Log($"Bullet hit {materialTag}!");
+        }
+
+        Destroy(gameObject);
+    }
+
+}

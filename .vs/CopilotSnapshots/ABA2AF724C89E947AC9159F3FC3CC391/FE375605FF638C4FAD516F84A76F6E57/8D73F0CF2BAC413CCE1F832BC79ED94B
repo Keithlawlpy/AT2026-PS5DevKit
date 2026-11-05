@@ -1,0 +1,163 @@
+﻿using System.Collections;
+using UnityEngine;
+using Unity.Cinemachine;
+using StarterAssets;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.PS5;
+
+
+#if UNITY_PS5
+using UnityEngine.PS5;
+using PSInput = UnityEngine.PS5.PS5Input;
+#endif
+
+#if UNITY_EDITOR && UNITY_PS5
+using DualSenseGamepad = UnityEngine.InputSystem.PS5.DualSenseGamepadPC;
+#elif UNITY_PS5
+using DualSenseGamepad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
+#endif
+
+public class ThirdPersonShooterController : MonoBehaviour
+{
+    [SerializeField] private CinemachineCamera aimVirtualCamera;
+    [SerializeField] private float normalSenitivity;
+    [SerializeField] private float aimSenitivity;
+    [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
+    [SerializeField] private Transform debugTransform;
+    [SerializeField] private Transform pfBulletProjectile;
+    [SerializeField] private Transform bulletSpawnPoint;
+    [SerializeField, Range(0f, 1f)] private float shootLowFrequencyMotor = 0.25f;
+    [SerializeField, Range(0f, 1f)] private float shootHighFrequencyMotor = 0.75f;
+    [SerializeField] private float shootHapticDuration = 0.2f;
+    [SerializeField] private HapticProfile marbleImpactHaptics = new HapticProfile(0.25f, 0.85f, 0.08f);
+    [SerializeField] private HapticProfile glassImpactHaptics = new HapticProfile(0.05f, 1f, 0.04f);
+    [SerializeField] private HapticProfile rockImpactHaptics = new HapticProfile(0.85f, 0.35f, 0.25f);
+
+    private ThirdPersonController thirdPersonController;
+    private StarterAssetsInputs starterAssetsInputs;
+    private Coroutine hapticStopCoroutine;
+
+    [System.Serializable]
+    private struct HapticProfile
+    {
+        [Range(0f, 1f)] public float lowFrequencyMotor;
+        [Range(0f, 1f)] public float highFrequencyMotor;
+        [Min(0f)] public float duration;
+
+        public HapticProfile(float lowFrequencyMotor, float highFrequencyMotor, float duration)
+        {
+            this.lowFrequencyMotor = lowFrequencyMotor;
+            this.highFrequencyMotor = highFrequencyMotor;
+            this.duration = duration;
+        }
+    }
+
+    private void Awake()
+    {
+        thirdPersonController = GetComponent<ThirdPersonController>();
+        starterAssetsInputs = GetComponent<StarterAssetsInputs>();
+    }
+
+    private void Start()
+    {
+        foreach (InputDevice device in InputSystem.devices)
+        {
+            Debug.Log($"Device: {device.displayName}, Type: {device.GetType().FullName}");
+        }
+    }
+
+    private void Update()
+    {
+        if (starterAssetsInputs.aim)
+        {
+            aimVirtualCamera.gameObject.SetActive(true);
+            thirdPersonController.SetSensitivity(aimSenitivity);
+        }
+        else
+        {
+            aimVirtualCamera.gameObject.SetActive(false);
+            thirdPersonController.SetSensitivity(normalSenitivity);
+        }
+
+        Vector2 screenCenterpPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Ray ray = Camera.main.ScreenPointToRay(screenCenterpPoint);
+
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
+        {
+            debugTransform.position = raycastHit.point;
+            
+        }
+
+        Vector3 worldAimTarget = raycastHit.point;
+
+        if (starterAssetsInputs.shoot)
+        {
+            Vector3 aimDirection = (worldAimTarget - bulletSpawnPoint.position).normalized;
+            Transform projectileTransform = Instantiate(pfBulletProjectile, bulletSpawnPoint.position, Quaternion.LookRotation(aimDirection, Vector3.up));
+            BulletProjectile projectile = projectileTransform.GetComponent<BulletProjectile>();
+
+            if (projectile != null)
+            {
+                projectile.Initialize(this);
+            }
+
+            TriggerHaptics(shootLowFrequencyMotor, shootHighFrequencyMotor, shootHapticDuration);
+            starterAssetsInputs.shoot = false;
+
+
+        }
+    }
+
+    public void TriggerImpactHaptics(string materialTag)
+    {
+        switch (materialTag)
+        {
+            case "Marble":
+                TriggerHaptics(marbleImpactHaptics);
+                break;
+            case "Glass":
+                TriggerHaptics(glassImpactHaptics);
+                break;
+            case "Rock":
+                TriggerHaptics(rockImpactHaptics);
+                break;
+        }
+    }
+
+    private void TriggerHaptics(HapticProfile profile)
+    {
+        TriggerHaptics(profile.lowFrequencyMotor, profile.highFrequencyMotor, profile.duration);
+    }
+
+    private void TriggerHaptics(float lowFrequencyMotor, float highFrequencyMotor, float duration)
+    {
+        Gamepad gamepad = Gamepad.current;
+        if (gamepad == null)
+        {
+            return;
+        }
+
+        if (hapticStopCoroutine != null)
+        {
+            StopCoroutine(hapticStopCoroutine);
+        }
+
+        gamepad.SetMotorSpeeds(lowFrequencyMotor, highFrequencyMotor);
+        hapticStopCoroutine = StartCoroutine(StopHaptics(gamepad, duration));
+    }
+
+    private IEnumerator StopHaptics(Gamepad gamepad, float duration)
+    {
+        yield return new WaitForSecondsRealtime(duration);
+
+        if (gamepad != null)
+        {
+            gamepad.SetMotorSpeeds(0f, 0f);
+        }
+
+        hapticStopCoroutine = null;
+    }
+
+
+}
