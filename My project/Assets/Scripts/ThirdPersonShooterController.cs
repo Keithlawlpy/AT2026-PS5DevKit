@@ -6,6 +6,18 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.PS5;
 
+
+#if UNITY_PS5
+using UnityEngine.PS5;
+using PSInput = UnityEngine.PS5.PS5Input;
+#endif
+
+#if UNITY_EDITOR && UNITY_PS5
+using DualSenseGamepad = UnityEngine.InputSystem.PS5.DualSenseGamepadPC;
+#elif UNITY_PS5
+using DualSenseGamepad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
+#endif
+
 public class ThirdPersonShooterController : MonoBehaviour
 {
     [SerializeField] private CinemachineCamera aimVirtualCamera;
