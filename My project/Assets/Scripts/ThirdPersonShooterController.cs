@@ -4,6 +4,7 @@ using Unity.Cinemachine;
 using StarterAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.PS5;
 
 public class ThirdPersonShooterController : MonoBehaviour
 {
@@ -72,7 +73,7 @@ public class ThirdPersonShooterController : MonoBehaviour
 
     private void TriggerHaptics()
     {
-        Gamepad gamepad = Gamepad.current;
+        DualSenseGamepad gamepad = DualSenseGamepad.current;
         if (gamepad == null)
         {
             return;

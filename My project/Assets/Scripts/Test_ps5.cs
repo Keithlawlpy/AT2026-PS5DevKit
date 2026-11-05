@@ -3,11 +3,11 @@ using UnityEngine.InputSystem.PS5;
 
 public class Test_ps5 : MonoBehaviour
 {
-    private DualSenseGamepadPC pad;
+    private DualSenseGamepad pad;
 
     private void Start()
     {
-        pad = DualSenseGamepadPC.current;
+        pad = DualSenseGamepad.current;
         ApplyTriggerEffects();
         Debug.Log("trigger effact applied");
     }
