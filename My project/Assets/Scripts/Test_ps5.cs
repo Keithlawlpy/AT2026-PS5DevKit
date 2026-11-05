@@ -9,6 +9,7 @@ public class Test_ps5 : MonoBehaviour
     {
         pad = DualSenseGamepadPC.current;
         ApplyTriggerEffects();
+        Debug.Log("trigger effact applied");
     }
     private void ApplyTriggerEffects()
     {
