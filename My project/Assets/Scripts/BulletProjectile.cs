@@ -17,7 +17,6 @@ public class BulletProjectile : MonoBehaviour
 
     private void Awake()
     {
-        // Get the Rigidbody from the projectile prefab.
         bulletRigidbody = GetComponent<Rigidbody>();
     }
 

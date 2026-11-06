@@ -3,6 +3,8 @@ using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEngine.InputSystem.DualShock.LowLevel;
@@ -183,6 +185,11 @@ namespace UnityEngine.InputSystem.PS5
                 default:
                     return Color.black;
             }
+        }
+
+        public void SetVibrationMode(VibrationMode compatible)
+        {
+            throw new NotImplementedException();
         }
     }
 
