@@ -5,15 +5,12 @@ public class BulletProjectile : MonoBehaviour
     // Rigidbody used to move the projectile forward after it is spawned.
     private Rigidbody bulletRigidbody;
 
-    // Reference to the player controller that created this bullet.
-    // The projectile uses it to request material-specific haptic feedback.
-    private ThirdPersonShooterController shooterController;
+    // Reference to the haptics component that owns the DualSense output.
     private Third_person_hapatics hapticsController;
 
     // Called by ThirdPersonShooterController immediately after the bullet is created.
-    public void Initialize(ThirdPersonShooterController controller, Third_person_hapatics haptics)
+    public void Initialize(Third_person_hapatics haptics)
     {
-        shooterController = controller;
         hapticsController = haptics;
     }
 
@@ -39,7 +36,6 @@ public class BulletProjectile : MonoBehaviour
         // Other objects are still hit, but they do not vibrate the controller.
         if (materialTag == "Marble" || materialTag == "Glass" || materialTag == "Metal")
         {
-            //shooterController?.TriggerImpactHaptics(materialTag);
             hapticsController?.TriggerImpactHaptics(materialTag);
             Debug.Log($"Bullet hit {materialTag}!");
         }

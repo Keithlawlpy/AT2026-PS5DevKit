@@ -1,33 +1,32 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem.PS5;
-using UnityEngine.InputSystem.Users;
+
+#if UNITY_EDITOR
+using DualSensePad = UnityEngine.InputSystem.PS5.DualSenseGamepadPC;
+#elif UNITY_PS5
+using DualSensePad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
+#endif
 
 public class Third_person_hapatics : MonoBehaviour
 {
-    DualSenseGamepad m_Gamepad;
+#if UNITY_EDITOR || UNITY_PS5
+    // The one DualSense device used by this haptics component.
+    private DualSensePad m_Gamepad;
+    private Coroutine stopHapticsCoroutine;
+    private bool vibrationModeConfigured;
+#endif
 
-    [SerializeField] private Transform pfBulletProjectile;
-
-    //different haptics
+    // Each material has a different vibration profile.
     [SerializeField] private HapticProfile marbleImpactHaptics = new HapticProfile(0.25f, 0.85f, 0.08f);
     [SerializeField] private HapticProfile glassImpactHaptics = new HapticProfile(0.05f, 1f, 0.04f);
     [SerializeField] private HapticProfile metalImpactHaptics = new HapticProfile(0.85f, 0.35f, 0.25f);
 
-    void Start() //or some other function to trigger the effect
+    private void Start()
     {
-
-        Debug.Log("start loaded for " + this.name);
-    }
-
-
-    void Update()
-    {
-
-        var m_Gamepad = DualSenseGamepad.GetBySlotIndex(0);
-
-        //Vibration mode only needs to be set once
-        m_Gamepad.SetVibrationMode(VibrationMode.Compatible);
+#if UNITY_EDITOR || UNITY_PS5
+        TryConfigureDualSense();
+#endif
     }
 
     [System.Serializable]
@@ -47,7 +46,7 @@ public class Third_person_hapatics : MonoBehaviour
 
     public void TriggerImpactHaptics(string materialTag)
     {
-        // Select the vibration profile based on the tag of the object hit by the bullet.
+        // Select exactly one profile based on the tag of the object hit by the bullet.
         switch (materialTag)
         {
             case "Marble":
@@ -64,24 +63,75 @@ public class Third_person_hapatics : MonoBehaviour
 
 
     private void TriggerHaptics(HapticProfile profile)
-    {   
-        m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
-        Debug.Log($"Motor Speeds set to Low: {profile.lowFrequencyMotorSpeed}, High: {profile.highFrequencyMotorSpeed} for {profile.duration} seconds");
+    {
+#if UNITY_EDITOR || UNITY_PS5
+        if (profile == null)
+        {
+            return;
+        }
 
+        TryConfigureDualSense();
+
+        if (m_Gamepad == null)
+        {
+            Debug.LogWarning("No DualSense controller is available for haptic feedback.");
+            return;
+        }
+
+        if (stopHapticsCoroutine != null)
+        {
+            StopCoroutine(stopHapticsCoroutine);
+        }
+
+        m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
+        stopHapticsCoroutine = StartCoroutine(StopHapticsAfterDelay(profile.duration));
+#endif
     }
 
+#if UNITY_EDITOR || UNITY_PS5
+    private void TryConfigureDualSense()
+    {
+        if (m_Gamepad == null)
+        {
+            m_Gamepad = DualSensePad.current;
+        }
+
+        if (m_Gamepad == null || vibrationModeConfigured)
+        {
+            return;
+        }
+
+#if UNITY_PS5_ENHANCED_INPUT_SYSTEM
+        m_Gamepad.SetVibrationMode(VibrationMode.Compatible2);
+#endif
+        vibrationModeConfigured = true;
+    }
 
     private IEnumerator StopHapticsAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
-        StopHaptics();
+        yield return new WaitForSecondsRealtime(delay);
+
+        if (m_Gamepad != null)
+        {
+            m_Gamepad.SetMotorSpeeds(0f, 0f);
+        }
+
+        stopHapticsCoroutine = null;
     }
 
-    private void StopHaptics()
+    private void OnDisable()
     {
-        m_Gamepad.SetMotorSpeeds(0f, 0f);
-        Debug.Log("Motor Stopped");
-    }
+        if (stopHapticsCoroutine != null)
+        {
+            StopCoroutine(stopHapticsCoroutine);
+            stopHapticsCoroutine = null;
+        }
 
+        if (m_Gamepad != null)
+        {
+            m_Gamepad.SetMotorSpeeds(0f, 0f);
+        }
+    }
+#endif
 
 }

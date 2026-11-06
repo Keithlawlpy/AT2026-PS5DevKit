@@ -1621,7 +1621,7 @@ PrefabInstance:
       addedObject: {fileID: 1762682261}
     - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1762682267}
+      addedObject: {fileID: 1762682263}
   m_SourcePrefab: {fileID: 100100000, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
 --- !u!114 &1762682259 stripped
 MonoBehaviour:
@@ -1671,7 +1671,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
   m_PrefabInstance: {fileID: 1762682258}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1762682267
+--- !u!114 &1762682263
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1682,8 +1682,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8de4c06590391e849ba76890e84e4d91, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  pfBulletProjectile: {fileID: 7555621595256630936, guid: f5b1d6b8b2c55dd49acf13c257830bdb, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::Third_person_hapatics
   marbleImpactHaptics:
     lowFrequencyMotorSpeed: 0.25
     highFrequencyMotorSpeed: 0.85

@@ -4,11 +4,6 @@ using Unity.Cinemachine;
 using StarterAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.PS5;
-using UnityEngine.Serialization;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
-
-using UnityEngine.InputSystem.PS5.ControllerSample;
 
 
 // In the Unity Editor, a DualSense connected to the computer is exposed as DualSenseGamepadPC.
@@ -34,16 +29,6 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private Transform bulletSpawnPoint;
 
 #if UNITY_EDITOR || UNITY_PS5
-    // Platform-specific DualSense device selected by the preprocessor alias above.
-
-    public InputUser inputUser { get; private set; }
-    public DualSensePad gamepadDevice { get; private set; } //Device on either platform (PS5 or PC)
-    public DualSenseGamepad gamepadDevicePS5 => (Gamepad)gamepadDevice as DualSenseGamepad;  //Device on PS5
-#if UNITY_EDITOR
-    public DualSenseGamepadPC gamepadDevicePC => (Gamepad)gamepadDevice as DualSenseGamepadPC;  //Device on PC
-#endif
-    public GamepadControls gamepadControls { get; private set; }
-    public IInputActionCollection2 actionCollection => gamepadControls;
 #endif
 
     private void Awake()
@@ -94,7 +79,7 @@ public class ThirdPersonShooterController : MonoBehaviour
             if (projectile != null)
             {
                 // Give the bullet access to this controller so it can report material impacts.
-               projectile.Initialize(this, GetComponent<Third_person_hapatics>());
+                projectile.Initialize(GetComponent<Third_person_hapatics>());
                 Debug.Log("Bullet passed on to hapatics");
             }
 
