@@ -94,7 +94,8 @@ public class ThirdPersonShooterController : MonoBehaviour
             if (projectile != null)
             {
                 // Give the bullet access to this controller so it can report material impacts.
-                projectile.Initialize(this);
+               projectile.Initialize(this, GetComponent<Third_person_hapatics>());
+                Debug.Log("Bullet passed on to hapatics");
             }
 
             // Reset the one-shot input so one press creates one bullet.
@@ -104,28 +105,7 @@ public class ThirdPersonShooterController : MonoBehaviour
         }
     }
 
-    public void TriggerImpactHaptics(string materialTag)
-    {
-        // Select the vibration profile based on the tag of the object hit by the bullet.
-        switch (materialTag)
-        {
-            case "Marble":
-                TriggerHaptics();
-                break;
-            case "Glass":
-                TriggerHaptics();
-                break;
-            case "Metal":
-                TriggerHaptics();
-                break;
-        }
-    }
-    
 
-    private void TriggerHaptics()
-    {
-
-    }
 
 
 }

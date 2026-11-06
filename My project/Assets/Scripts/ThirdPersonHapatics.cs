@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.InputSystem.PS5;
 using UnityEngine.InputSystem.Users;
 
@@ -6,6 +7,7 @@ public class Third_person_hapatics : MonoBehaviour
 {
     DualSenseGamepad m_Gamepad;
 
+    [SerializeField] private Transform pfBulletProjectile;
 
     //different haptics
     [SerializeField] private HapticProfile marbleImpactHaptics = new HapticProfile(0.25f, 0.85f, 0.08f);
@@ -15,7 +17,7 @@ public class Third_person_hapatics : MonoBehaviour
     void Start() //or some other function to trigger the effect
     {
 
-        Debug.Log("Motor Speeds set to 1f, 1f");
+        Debug.Log("start loaded for " + this.name);
     }
 
 
@@ -26,10 +28,6 @@ public class Third_person_hapatics : MonoBehaviour
 
         //Vibration mode only needs to be set once
         m_Gamepad.SetVibrationMode(VibrationMode.Compatible);
-
-        m_Gamepad.SetMotorSpeeds(1f, 1f);
-
-        Debug.Log("Motor Running");
     }
 
     [System.Serializable]
@@ -47,6 +45,43 @@ public class Third_person_hapatics : MonoBehaviour
     }
 
 
+    public void TriggerImpactHaptics(string materialTag)
+    {
+        // Select the vibration profile based on the tag of the object hit by the bullet.
+        switch (materialTag)
+        {
+            case "Marble":
+                TriggerHaptics(marbleImpactHaptics);
+                break;
+            case "Glass":
+                TriggerHaptics(glassImpactHaptics);
+                break;
+            case "Metal":
+                TriggerHaptics(metalImpactHaptics);
+                break;
+        }
+    }
+
+
+    private void TriggerHaptics(HapticProfile profile)
+    {   
+        m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
+        Debug.Log($"Motor Speeds set to Low: {profile.lowFrequencyMotorSpeed}, High: {profile.highFrequencyMotorSpeed} for {profile.duration} seconds");
+
+    }
+
+
+    private IEnumerator StopHapticsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        StopHaptics();
+    }
+
+    private void StopHaptics()
+    {
+        m_Gamepad.SetMotorSpeeds(0f, 0f);
+        Debug.Log("Motor Stopped");
+    }
 
 
 }
