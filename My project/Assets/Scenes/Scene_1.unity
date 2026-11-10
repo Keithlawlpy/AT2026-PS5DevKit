@@ -1657,6 +1657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3f927b37b8181541a2c33cdf1590945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonShooterController
+  starterAssetsInputs: {fileID: 1762682259}
   aimVirtualCamera: {fileID: 585593292}
   normalSenitivity: 1
   aimSenitivity: 0.5
@@ -1686,15 +1687,15 @@ MonoBehaviour:
   marbleImpactHaptics:
     lowFrequencyMotorSpeed: 0.25
     highFrequencyMotorSpeed: 0.85
-    duration: 0.08
+    duration: 8
   glassImpactHaptics:
     lowFrequencyMotorSpeed: 0.05
     highFrequencyMotorSpeed: 1
-    duration: 0.04
+    duration: 4
   metalImpactHaptics:
     lowFrequencyMotorSpeed: 0.85
     highFrequencyMotorSpeed: 0.35
-    duration: 0.25
+    duration: 25
 --- !u!1 &1764214107
 GameObject:
   m_ObjectHideFlags: 0

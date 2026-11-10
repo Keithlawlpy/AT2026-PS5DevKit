@@ -29,6 +29,7 @@ public class BulletProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log ("Bullet collided with:" + other.name);
         // The target's Unity tag identifies which haptic profile should be used.
         string materialTag = other.tag;
 

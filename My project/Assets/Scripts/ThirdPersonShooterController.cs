@@ -5,9 +5,6 @@ using StarterAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.PS5;
 
-
-// In the Unity Editor, a DualSense connected to the computer is exposed as DualSenseGamepadPC.
-
 #if UNITY_EDITOR
 using DualSensePad = UnityEngine.InputSystem.PS5.DualSenseGamepadPC;
 #elif UNITY_PS5
@@ -17,7 +14,7 @@ using DualSensePad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
 public class ThirdPersonShooterController : MonoBehaviour
 {
     private ThirdPersonController thirdPersonController;
-    private StarterAssetsInputs starterAssetsInputs;
+    [SerializeField] private StarterAssetsInputs starterAssetsInputs;
 
     // Existing third-person camera and aiming references.
     [SerializeField] private CinemachineCamera aimVirtualCamera;
@@ -40,7 +37,10 @@ public class ThirdPersonShooterController : MonoBehaviour
 
     private void Start()
     {
-
+        if(starterAssetsInputs == null)
+        {
+            Debug.LogError("StarterAssetsInputs component is missing from the player object.");
+        }
     }
 
     private void Update()
@@ -71,6 +71,7 @@ public class ThirdPersonShooterController : MonoBehaviour
 
         if (starterAssetsInputs.shoot)
         {
+            Debug.Log("starterAssetsInputs.shoot is true, shooting bullet");
             // Spawn the projectile toward the point found by the aiming raycast.
             Vector3 aimDirection = (worldAimTarget - bulletSpawnPoint.position).normalized;
             Transform projectileTransform = Instantiate(pfBulletProjectile, bulletSpawnPoint.position, Quaternion.LookRotation(aimDirection, Vector3.up));
