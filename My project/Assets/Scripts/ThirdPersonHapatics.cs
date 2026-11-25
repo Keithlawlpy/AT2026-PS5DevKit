@@ -1,88 +1,61 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem.PS5;
-using UnityEngine.Serialization;
 
+#if UNITY_EDITOR
+using DualSenseGamePad = UnityEngine.InputSystem.PS5.DualSenseGamepadPC;
+#elif UNITY_PS5
 using DualSenseGamePad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
+#endif
 
 public class Third_person_hapatics : MonoBehaviour
 {
 #if UNITY_EDITOR || UNITY_PS5
-   //haptics component.
-    [SerializeField] AudioSource vibrationSource;
-    [SerializeField] AudioSource MarbleSource;
-    [SerializeField] AudioSource GlassSource;
-    [SerializeField] AudioSource MetalSource;
+    [Header("Advanced Vibration Audio")]
+    [SerializeField] private AudioSource vibrationSource;
+    [SerializeField] private AudioClip marbleVibrationClip;
+    [SerializeField] private AudioClip glassVibrationClip;
+    [SerializeField] private AudioClip metalVibrationClip;
 
-    DualSenseGamePad m_Gamepad;
+    private DualSenseGamePad m_Gamepad;
     private Coroutine stopHapticsCoroutine;
     private bool vibrationModeConfigured;
 #endif
-    /*
-    // Each material has a different vibration profile.
-    [SerializeField] private HapticProfile marbleImpactHaptics = new HapticProfile(25f, 85f, 8f);
-    [SerializeField] private HapticProfile glassImpactHaptics = new HapticProfile(5f, 10f, 4f);
-    [SerializeField] private HapticProfile metalImpactHaptics = new HapticProfile(85f, 35f, 25f);
-    */
 
     private void Start()
     {
 #if UNITY_EDITOR || UNITY_PS5
+        ConfigureVibrationSource();
         TryConfigureDualSense();
-        m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
 #endif
-    }
-    /*
-    [System.Serializable]
-    private class HapticProfile
-    {
-        public float lowFrequencyMotorSpeed;
-        public float highFrequencyMotorSpeed;
-        public float duration;
-        public HapticProfile(float lowFrequencyMotorSpeed, float highFrequencyMotorSpeed, float duration)
-        {
-            this.lowFrequencyMotorSpeed = lowFrequencyMotorSpeed;
-            this.highFrequencyMotorSpeed = highFrequencyMotorSpeed;
-            this.duration = duration;
-        }
-    }
-    */
-
-    private void Update()
-    {
-        m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
     }
 
     public void TriggerImpactHaptics(string materialTag)
     {
-        // Select exactly one profile based on the tag of the object hit by the bullet.
+        AudioClip materialClip = null;
+
         switch (materialTag)
         {
             case "Marble":
-                MarbleSource = vibrationSource;
-                //TriggerHaptics(marbleImpactHaptics);
+                materialClip = marbleVibrationClip;
                 break;
             case "Glass":
-                GlassSource = vibrationSource;
-                //TriggerHaptics(glassImpactHaptics);
+                materialClip = glassVibrationClip;
                 break;
             case "Metal":
-                MetalSource = vibrationSource;  
-                //TriggerHaptics(metalImpactHaptics);
+                materialClip = metalVibrationClip;
                 break;
+        }
+
+        if (materialClip != null)
+        {
+            TriggerHaptics(materialClip);
         }
     }
 
-    
-    private void TriggerHaptics(HapticProfile profile)
+    private void TriggerHaptics(AudioClip materialClip)
     {
-        Debug.Log("triggering haptics");
 #if UNITY_EDITOR || UNITY_PS5
-        if (profile == null)
-        {
-            return;
-        }
-
         TryConfigureDualSense();
 
         if (m_Gamepad == null)
@@ -91,23 +64,39 @@ public class Third_person_hapatics : MonoBehaviour
             return;
         }
 
+        ConfigureVibrationSource();
+
         if (stopHapticsCoroutine != null)
         {
             StopCoroutine(stopHapticsCoroutine);
         }
 
-        //m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
+        vibrationSource.Stop();
+        vibrationSource.clip = materialClip;
         vibrationSource.PlayOnGamepad(m_Gamepad.slotIndex);
-        Debug.Log("triggered motor");
-        stopHapticsCoroutine = StartCoroutine(StopHapticsAfterDelay(profile.duration));
+        stopHapticsCoroutine = StartCoroutine(StopHapticsAfterDelay(materialClip.length));
 #endif
     }
 
 #if UNITY_EDITOR || UNITY_PS5
+    private void ConfigureVibrationSource()
+    {
+        if (vibrationSource == null)
+        {
+            vibrationSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        vibrationSource.playOnAwake = false;
+        vibrationSource.loop = false;
+        vibrationSource.gamepadSpeakerOutputType = GamepadSpeakerOutputType.Vibration;
+    }
+
     private void TryConfigureDualSense()
     {
-        m_Gamepad = DualSenseGamepad.GetBySlotIndex(0);
-        vibrationSource.gamepadSpeakerOutputType = GamepadSpeakerOutputType.Vibration;
+        if (m_Gamepad == null)
+        {
+            m_Gamepad = DualSenseGamePad.current;
+        }
 
         if (m_Gamepad == null || vibrationModeConfigured)
         {
@@ -117,6 +106,7 @@ public class Third_person_hapatics : MonoBehaviour
 #if UNITY_PS5_ENHANCED_INPUT_SYSTEM
         m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
 #endif
+
         vibrationModeConfigured = true;
     }
 
@@ -124,30 +114,27 @@ public class Third_person_hapatics : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(delay);
 
-        if (m_Gamepad != null)
+        if (vibrationSource != null)
         {
-            m_Gamepad.SetMotorSpeeds(0f, 0f);
-            Debug.Log("stopped motor");
+            vibrationSource.Stop();
         }
 
         stopHapticsCoroutine = null;
     }
-    /*
+
     private void OnDisable()
     {
-
         if (stopHapticsCoroutine != null)
         {
             StopCoroutine(stopHapticsCoroutine);
             stopHapticsCoroutine = null;
         }
 
-        if (m_Gamepad != null)
+        if (vibrationSource != null)
         {
-            m_Gamepad.SetMotorSpeeds(0f, 0f);
+            vibrationSource.Stop();
         }
     }
-    */
 #endif
 
 }
