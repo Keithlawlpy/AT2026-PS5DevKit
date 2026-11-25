@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class BulletProjectile : MonoBehaviour
 {
-    // Rigidbody used to move the projectile forward after it is spawned.
     private Rigidbody bulletRigidbody;
 
     // Reference to the haptics component that owns the DualSense output.

@@ -8,25 +8,31 @@ using DualSenseGamePad = UnityEngine.InputSystem.PS5.DualSenseGamepad;
 public class Third_person_hapatics : MonoBehaviour
 {
 #if UNITY_EDITOR || UNITY_PS5
-    // The one DualSense device used by this haptics component.
+   //haptics component.
+    [SerializeField] AudioSource vibrationSource;
+    [SerializeField] AudioSource MarbleSource;
+    [SerializeField] AudioSource GlassSource;
+    [SerializeField] AudioSource MetalSource;
+
     DualSenseGamePad m_Gamepad;
     private Coroutine stopHapticsCoroutine;
     private bool vibrationModeConfigured;
 #endif
-
+    /*
     // Each material has a different vibration profile.
     [SerializeField] private HapticProfile marbleImpactHaptics = new HapticProfile(25f, 85f, 8f);
     [SerializeField] private HapticProfile glassImpactHaptics = new HapticProfile(5f, 10f, 4f);
     [SerializeField] private HapticProfile metalImpactHaptics = new HapticProfile(85f, 35f, 25f);
+    */
 
     private void Start()
     {
 #if UNITY_EDITOR || UNITY_PS5
         TryConfigureDualSense();
-        m_Gamepad.SetVibrationMode(VibrationMode.Compatible);
+        m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
 #endif
     }
-
+    /*
     [System.Serializable]
     private class HapticProfile
     {
@@ -40,10 +46,11 @@ public class Third_person_hapatics : MonoBehaviour
             this.duration = duration;
         }
     }
+    */
 
     private void Update()
     {
-        m_Gamepad.SetVibrationMode(VibrationMode.Compatible);
+        m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
     }
 
     public void TriggerImpactHaptics(string materialTag)
@@ -52,18 +59,21 @@ public class Third_person_hapatics : MonoBehaviour
         switch (materialTag)
         {
             case "Marble":
-                TriggerHaptics(marbleImpactHaptics);
+                MarbleSource = vibrationSource;
+                //TriggerHaptics(marbleImpactHaptics);
                 break;
             case "Glass":
-                TriggerHaptics(glassImpactHaptics);
+                GlassSource = vibrationSource;
+                //TriggerHaptics(glassImpactHaptics);
                 break;
             case "Metal":
-                TriggerHaptics(metalImpactHaptics);
+                MetalSource = vibrationSource;  
+                //TriggerHaptics(metalImpactHaptics);
                 break;
         }
     }
 
-
+    
     private void TriggerHaptics(HapticProfile profile)
     {
         Debug.Log("triggering haptics");
@@ -86,7 +96,8 @@ public class Third_person_hapatics : MonoBehaviour
             StopCoroutine(stopHapticsCoroutine);
         }
 
-        m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
+        //m_Gamepad.SetMotorSpeeds(profile.lowFrequencyMotorSpeed, profile.highFrequencyMotorSpeed);
+        vibrationSource.PlayOnGamepad(m_Gamepad.slotIndex);
         Debug.Log("triggered motor");
         stopHapticsCoroutine = StartCoroutine(StopHapticsAfterDelay(profile.duration));
 #endif
@@ -95,7 +106,8 @@ public class Third_person_hapatics : MonoBehaviour
 #if UNITY_EDITOR || UNITY_PS5
     private void TryConfigureDualSense()
     {
-            m_Gamepad = DualSenseGamepad.GetBySlotIndex(0);
+        m_Gamepad = DualSenseGamepad.GetBySlotIndex(0);
+        vibrationSource.gamepadSpeakerOutputType = GamepadSpeakerOutputType.Vibration;
 
         if (m_Gamepad == null || vibrationModeConfigured)
         {
@@ -103,7 +115,7 @@ public class Third_person_hapatics : MonoBehaviour
         }
 
 #if UNITY_PS5_ENHANCED_INPUT_SYSTEM
-        m_Gamepad.SetVibrationMode(VibrationMode.Compatible2);
+        m_Gamepad.SetVibrationMode(VibrationMode.Advanced);
 #endif
         vibrationModeConfigured = true;
     }
